@@ -151,6 +151,21 @@ Codex 使用对应私钥推送
 不推荐把 GitHub Token 直接粘贴到聊天中。  
 如果必须使用 HTTPS Token，优先使用系统 Git Credential Manager，让用户在本机弹窗或凭据管理器中输入。
 
+HTTPS 方式的典型流程：
+
+```text
+git push 时由 Git Credential Manager 弹出网页登录
+→ 用户在浏览器完成 GitHub 登录和验证
+→ Windows 凭据管理器安全保存授权
+→ 后续 git push 自动使用保存的凭据
+```
+
+不要使用下面这种把 Token 写进远程地址的做法：
+
+```text
+https://用户名:Token@github.com/用户名/仓库.git
+```
+
 ## 3. 用户应该如何向 Codex 提任务
 
 ### 3.1 最简提示词
@@ -297,6 +312,13 @@ git checkout --
 
 ```powershell
 rg -n -i "password|passwd|token|api[_-]?key|secret|private key"
+```
+
+如果 Windows 没有安装 ripgrep（`rg`），使用 PowerShell 原生搜索：
+
+```powershell
+Get-ChildItem -Recurse -File |
+    Select-String -Pattern "password|passwd|token|api[_-]?key|secret|private key"
 ```
 
 还应检查：
@@ -515,6 +537,9 @@ ssh -T -i "$HOME\.ssh\id_ed25519" git@github.com
 ```powershell
 ssh -T -p 443 -i "$HOME\.ssh\id_ed25519" git@ssh.github.com
 ```
+
+第一次连接 GitHub 时，SSH 可能显示主机指纹并询问是否信任。  
+不要不看指纹就直接输入 `yes`。应先对照 GitHub 官方文档公布的最新 SSH 主机指纹，确认一致后再接受。
 
 成功时通常显示：
 
